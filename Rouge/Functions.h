@@ -24,6 +24,15 @@ enum Colour
 	None
 };
 
+enum Direction
+{
+	Dir_Up,
+	Dir_Down,
+	Dir_Left,
+	Dir_Right,
+	Dir_Error
+};
+
 enum KeyPress
 {
 	Key_Up,
@@ -133,4 +142,6 @@ int wherex();
 int wherey();
 void gotoxy(int column = wherex(), int line = wherey());
 
+Coord DirToNum(Direction pDir);
+Direction oppDir(Direction pDir);
 #endif

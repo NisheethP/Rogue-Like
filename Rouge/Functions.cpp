@@ -315,3 +315,49 @@ bool char_To_KeyPress(KeyPress& key, char chr)
 	return false;
 }
 
+Coord DirToNum(Direction pDir)
+{
+	switch(pDir)
+	{
+	case Dir_Up:
+		return {0,-1};
+		break;
+	case Dir_Down:
+		return{ 0, 1 };
+		break;
+	case Dir_Left:
+		return{ -1, 0 };
+		break;
+	case Dir_Right:
+		return{ 1, 0 };
+		break;
+	default:
+	}
+	return{ 0, 0 };
+}
+
+//Gives the Direction opposite to current direction
+Direction oppDir(Direction pDir)
+{
+	Direction rDir;
+	switch (pDir)
+	{
+	case Dir_Right:
+		rDir = Dir_Left;
+		break;
+	case Dir_Left:
+		rDir = Dir_Right;
+		break;
+	case Dir_Down:
+		rDir = Dir_Up;
+		break;
+	case Dir_Up:
+		rDir = Dir_Down;
+		break;
+	case Dir_Error:
+	default:
+		break;
+	}
+
+	return rDir;
+}
