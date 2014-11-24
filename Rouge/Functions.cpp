@@ -1,6 +1,5 @@
 #include "Functions.h"
 #include <iostream>
-#include "Snake.h"
 
 HANDLE Global::hStdin = GetStdHandle(STD_INPUT_HANDLE);
 HANDLE Global::hStdout = GetStdHandle(STD_OUTPUT_HANDLE);
@@ -332,6 +331,7 @@ Coord DirToNum(Direction pDir)
 		return{ 1, 0 };
 		break;
 	default:
+		break;
 	}
 	return{ 0, 0 };
 }

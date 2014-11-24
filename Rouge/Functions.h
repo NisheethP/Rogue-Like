@@ -110,7 +110,7 @@ public:
 		return *this;
 	}
 
-	Coord& operator+ (Coord p_Coord)
+	Coord operator+ (Coord p_Coord)
 	{
 		Coord tempCoord = *this;
 		tempCoord.x += p_Coord.x;
