@@ -141,6 +141,7 @@ void SetColour(Coord crd, int length, Colour fore = Colour::DarkBlue, Colour bac
 int wherex();
 int wherey();
 void gotoxy(int column = wherex(), int line = wherey());
+void gotoxy(Coord crd);
 
 Coord DirToNum(Direction pDir);
 Direction oppDir(Direction pDir);

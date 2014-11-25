@@ -102,6 +102,10 @@ int wherey()
 		return -1;
 	return csbi.dwCursorPosition.Y;
 }
+void gotoxy(Coord crd)
+{
+	gotoxy(crd.x, crd.y);
+}
 
 WORD ColourToFore(Colour p_Colour)
 {
