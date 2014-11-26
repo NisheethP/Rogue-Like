@@ -19,8 +19,11 @@ protected:
 	Menu* prevMenu;
 	ChildMenus childMenu;
 	StringVector commands;
+	static Coord backCoord;
+
 public:
 	const bool isTerminating;
+
 	void addCommand(std::string str);
 	bool addChildMenu(int commandNum, Menu* menu);
 	

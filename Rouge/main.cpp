@@ -12,13 +12,14 @@ int main()
 	
 	INPUT_RECORD inputBuffer[128];
 	DWORD numInput;
+	const Coord MenuCoord(30,10);
 
 	GetConsoleMode(Global::hStdin, &oldWindowMode);
 	SetConsoleMode(Global::hStdin, ENABLE_WINDOW_INPUT | ENABLE_MOUSE_INPUT);
 
-	Menu mainMenu({ 10,5 });
+	Menu mainMenu(MenuCoord);
 	Menu newGame({ 0, 0 }, &mainMenu);
-	Menu options({ 10, 5 }, &mainMenu);
+	Menu options(MenuCoord, &mainMenu);
 	Menu quit(Coord(0,0),nullptr, true);
 
 	mainMenu.addCommand("New Game");
@@ -26,13 +27,13 @@ int main()
 	mainMenu.addCommand("Quit");
 
 	options.addCommand("Difficulty");
-	options.addCommand("Back");
+	//options.addCommand("Back");
 
 	mainMenu.addChildMenu(0, &newGame);
 	mainMenu.addChildMenu(1, &options);
 	mainMenu.addChildMenu(2, &quit);
 
-	options.addChildMenu(1, &mainMenu);
+	//options.addChildMenu(1, &mainMenu);
 
 	Menu* tempMenu = &mainMenu;
 	Menu* prevMenu = nullptr;
@@ -91,6 +92,7 @@ Coord MenuMouseProc(MOUSE_EVENT_RECORD mouseEvent)
 	#ifndef MOUSE_HWHEELED
 	#define MOUSE_HWHEELED 0x0008
 	#endif
+
 	switch (mouseEvent.dwEventFlags)
 	{
 	case 0:

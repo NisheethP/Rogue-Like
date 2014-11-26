@@ -5,12 +5,16 @@ using std::cout;
 
 Menu::Menu(Coord p_InitCoord, Menu* p_PrevMenu, bool p_IsTerminating) :
 initCoord(p_InitCoord),
-prevMenu(prevMenu),
+prevMenu(p_PrevMenu),
 childMenu(ChildMenus()),
 commands(StringVector()),
 isTerminating(p_IsTerminating)
 {
+	if (prevMenu != nullptr)
+		childMenu["Back"] = prevMenu;
 }
+
+Coord Menu::backCoord = Coord(5, 45);
 
 void Menu::drawMenu()
 {
@@ -24,6 +28,11 @@ void Menu::drawMenu()
 			cout << commands[i];
 
 		tempCoord.y += 2;
+	}
+	if (prevMenu != nullptr)
+	{
+		gotoxy(backCoord);
+		cout << "Back";
 	}
 }
 
@@ -51,16 +60,27 @@ Menu* Menu::getMenu(std::string str)
 
 Menu* Menu::getMenu(Coord crd)
 {
-	Coord delCoord = crd - initCoord;
-	if (delCoord.y < 0 || commands.size()==0)
-		return nullptr;
+	bool isBackCrd = false;
+	isBackCrd = (crd.y == 45);
+	isBackCrd = (isBackCrd && crd.x >= 5 && crd.x <= 9);
 
-	int strNum = delCoord.y / 2;
-	std::string tempStr = commands[strNum];
-	if (delCoord.x <= tempStr.size())
-		return getMenu(tempStr);
+	if (isBackCrd)
+	{
+		return prevMenu;
+	}
 	else
-		return nullptr;
+	{
+		Coord delCoord = crd - initCoord;
+		if (delCoord.y < 0 || commands.size() == 0)
+			return nullptr;
+
+		int strNum = delCoord.y / 2;
+		std::string tempStr = commands[strNum];
+		if (delCoord.x <= tempStr.size())
+			return getMenu(tempStr);
+		else
+			return nullptr;
+	}	
 }
 
 Menu* Menu::getPrevMenu()
