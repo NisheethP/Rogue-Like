@@ -2,8 +2,10 @@
 #include "Menu.h"
 #include <Windows.h>
 #include <iostream>
+#include "Constants.h"
 
-Coord MenuMouseProc(MOUSE_EVENT_RECORD mouseEvent);
+
+Coord MenuMouseProc(MOUSE_EVENT_RECORD mouseEvent, bool& mouseClicked);
 DWORD oldWindowMode;
 
 int main()
@@ -21,6 +23,7 @@ int main()
 	Menu newGame({ 0, 0 }, &mainMenu);
 	Menu options(MenuCoord, &mainMenu);
 	Menu quit(Coord(0,0),nullptr, true);
+	Menu difficulty(MenuCoord, &options);
 
 	mainMenu.addCommand("New Game");
 	mainMenu.addCommand("Options");
@@ -33,14 +36,16 @@ int main()
 	mainMenu.addChildMenu(1, &options);
 	mainMenu.addChildMenu(2, &quit);
 
-	//options.addChildMenu(1, &mainMenu);
+	options.addChildMenu(0, &difficulty);
 
 	Menu* tempMenu = &mainMenu;
 	Menu* prevMenu = nullptr;
-	Coord tempCoord = Coord(12,0);
+	Coord tempCoord(0,0);
+	Coord curCoord(0, 0);
 	
 	tempMenu->drawMenu();
 	bool isInMenu = true;
+	bool mouseClicked = false;
 	while (isInMenu)
 	{
 		if (!ReadConsoleInput(
@@ -57,26 +62,35 @@ int main()
 			switch (inputBuffer[inpIter].EventType)
 			{
 			case MOUSE_EVENT:
-				tempCoord = MenuMouseProc(inputBuffer[inpIter].Event.MouseEvent);
+				tempCoord = MenuMouseProc(inputBuffer[inpIter].Event.MouseEvent, mouseClicked);
 				break;
 			default:
 				break;
 			}
 		}
+		if (mouseClicked)
+			curCoord = tempCoord;
+
+		std::string curMenuName = tempMenu->getMenuName(curCoord);
+		if (!mouseClicked)
+		{
+			int menuLen = tempMenu->getMenuName(tempCoord).length();
+			if (tempMenu->getMenuName(tempCoord) != Constants::ErrorMenu)
+				SetColour(tempCoord, menuLen);
+
+		}
 		
-		if (tempMenu->getMenu(tempCoord) == nullptr)
+		if (curMenuName != Constants::ErrorMenu)
 		{
-		}	
-		else
-		{
-			tempMenu = tempMenu->getMenu(tempCoord);
+			tempMenu = tempMenu->getMenu(curMenuName);
 
 			if (tempMenu->isTerminating)
 				isInMenu = false;
 
 			prevMenu = tempMenu->getPrevMenu();
 			tempMenu->drawMenu();
-		}		
+		}
+		SetColour(tempCoord, 40, Colour::White, Colour::None);
 	}
 	
 	std::cout << "\n\n\n";
@@ -87,19 +101,26 @@ int main()
 	return 0;
 }
 
-Coord MenuMouseProc(MOUSE_EVENT_RECORD mouseEvent)
+Coord MenuMouseProc(MOUSE_EVENT_RECORD mouseEvent, bool& mouseClicked)
 {
 	#ifndef MOUSE_HWHEELED
 	#define MOUSE_HWHEELED 0x0008
 	#endif
+	
+	mouseClicked = false;
 
 	switch (mouseEvent.dwEventFlags)
 	{
 	case 0:
 		if (mouseEvent.dwButtonState == FROM_LEFT_1ST_BUTTON_PRESSED)
 		{
+			mouseClicked = true;
 			return Coord(mouseEvent.dwMousePosition.X, mouseEvent.dwMousePosition.Y);
 		}
+	case MOUSE_MOVED:
+		return Coord(mouseEvent.dwMousePosition.X, mouseEvent.dwMousePosition.Y);
+	default:
+		break;
 	}
 
 	return Coord(-5, -5);		//Negative coordinates are all treated as not being on any menu.

@@ -1,5 +1,6 @@
 #include "Menu.h"
 #include <iostream>
+#include "Constants.h"
 using std::cout;
 
 
@@ -40,6 +41,7 @@ void Menu::addCommand(std::string str)
 {
 	commands.push_back(str);
 }
+
 bool Menu::addChildMenu(int commandNum, Menu* menu)
 {
 	if (commandNum < commands.size())
@@ -58,7 +60,7 @@ Menu* Menu::getMenu(std::string str)
 		return childMenu[str];
 }
 
-Menu* Menu::getMenu(Coord crd)
+std::string Menu::getMenuName(Coord crd)
 {
 	bool isBackCrd = false;
 	isBackCrd = (crd.y == 45);
@@ -66,21 +68,38 @@ Menu* Menu::getMenu(Coord crd)
 
 	if (isBackCrd)
 	{
-		return prevMenu;
+		return "Back";
 	}
 	else
 	{
 		Coord delCoord = crd - initCoord;
 		if (delCoord.y < 0 || commands.size() == 0)
-			return nullptr;
+			return Constants::ErrorMenu;
 
 		int strNum = delCoord.y / 2;
+		if (strNum >= commands.size())
+			return Constants::ErrorMenu;
+
 		std::string tempStr = commands[strNum];
-		if (delCoord.x <= tempStr.size())
-			return getMenu(tempStr);
+
+		if (delCoord.x < tempStr.size() && delCoord.x >= 0)
+			return tempStr;
 		else
-			return nullptr;
+			return Constants::ErrorMenu;
 	}	
+}
+
+int Menu::getCommandLength(int commandNum)
+{
+	if (commandNum < 0 || commandNum >= commands.size())
+		return 0;
+	else
+		return commands[commandNum].length();
+}
+
+int Menu::getNumChild()
+{
+	return childMenu.size();
 }
 
 Menu* Menu::getPrevMenu()

@@ -30,10 +30,11 @@ public:
 	Menu(Coord p_InitCoord = { 0, 0 }, Menu* p_PrevMenu = nullptr, bool p_IsTerminating = false);
 	void drawMenu();
 	Menu* getMenu(std::string str);
-	Menu* getMenu(Coord crd);
+	std::string getMenuName(Coord crd);
 	Menu* getPrevMenu();
 
 	int getNumChild();
+	int getCommandLength(int commandNum);
 
 	~Menu();
 };
