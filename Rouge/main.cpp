@@ -4,8 +4,11 @@
 #include <iostream>
 #include "Constants.h"
 
+using CommandsCoords = std::pair<Coord, int>;
+using CommandsCoordsVec = std::vector<CommandsCoords>;
 
 Coord MenuMouseProc(MOUSE_EVENT_RECORD mouseEvent, bool& mouseClicked);
+
 DWORD oldWindowMode;
 
 int main()
@@ -30,8 +33,7 @@ int main()
 	mainMenu.addCommand("Quit");
 
 	options.addCommand("Difficulty");
-	//options.addCommand("Back");
-
+	
 	mainMenu.addChildMenu(0, &newGame);
 	mainMenu.addChildMenu(1, &options);
 	mainMenu.addChildMenu(2, &quit);
@@ -42,12 +44,16 @@ int main()
 	Menu* prevMenu = nullptr;
 	Coord tempCoord(0,0);
 	Coord curCoord(0, 0);
-	
+	Coord curHiCoord(0, 0);
+
 	tempMenu->drawMenu();
 	bool isInMenu = true;
 	bool mouseClicked = false;
+	std::string curMenuName = Constants::ErrorMenu;
 	while (isInMenu)
 	{
+		curMenuName = Constants::ErrorMenu;
+
 		if (!ReadConsoleInput(
 			Global::hStdin,
 			inputBuffer,
@@ -69,20 +75,64 @@ int main()
 			}
 		}
 		if (mouseClicked)
+		{
 			curCoord = tempCoord;
-
-		std::string curMenuName = tempMenu->getMenuName(curCoord);
+			curMenuName = tempMenu->getMenuName(curCoord);
+		}
 		if (!mouseClicked)
 		{
-			int menuLen = tempMenu->getMenuName(tempCoord).length();
-			if (tempMenu->getMenuName(tempCoord) != Constants::ErrorMenu)
-				SetColour(tempCoord, menuLen);
+			CommandsCoordsVec commandCoords;
+			Coord crd = tempMenu->getInitCoord();
+			
+			if (tempMenu->canGoBack() && tempCoord.y == Menu::backCoord.y)
+			{
+				if (tempCoord.x >= Menu::backCoord.x && tempCoord.x < Menu::backCoord.x + 4)
+				{
+					SetColour(curHiCoord, 40, Colour::White, Colour::None);
 
+					curHiCoord = tempCoord;
+					curHiCoord.x = Menu::backCoord.x;
+					SetColour(curHiCoord, 4);
+				}
+				
+			}
+			else
+			{
+				int maxCoordIter = tempMenu->getNumChild();
+
+				if (tempMenu->canGoBack())
+					maxCoordIter--;
+				for (int coordIter = 0; coordIter < maxCoordIter; coordIter++)
+				{
+					commandCoords.push_back({ crd, tempMenu->getMenuName(crd).length() });
+					crd.y += 2;
+				}
+
+				for (int cit = 0; cit < maxCoordIter; cit++)
+				{
+					if (commandCoords[cit].first.y == tempCoord.y)
+					{
+						if (tempCoord.x >= commandCoords[cit].first.x && tempCoord.x < commandCoords[cit].first.x + commandCoords[cit].second)
+						{
+							int len = tempMenu->getMenuName(curHiCoord).length();
+							SetColour(curHiCoord, len, Colour::White, Colour::None);
+
+							curHiCoord = tempCoord;
+							curHiCoord.x = tempMenu->getInitCoord().x;
+							len = tempMenu->getMenuName(curHiCoord).length();
+							SetColour(curHiCoord, len);
+						}
+					}
+				}
+			}						
 		}
 		
 		if (curMenuName != Constants::ErrorMenu)
 		{
-			tempMenu = tempMenu->getMenu(curMenuName);
+			if (curMenuName == "Back")
+				tempMenu = tempMenu->getPrevMenu();
+			else
+				tempMenu = tempMenu->getMenu(curMenuName);
 
 			if (tempMenu->isTerminating)
 				isInMenu = false;
@@ -90,14 +140,9 @@ int main()
 			prevMenu = tempMenu->getPrevMenu();
 			tempMenu->drawMenu();
 		}
-		SetColour(tempCoord, 40, Colour::White, Colour::None);
 	}
-	
-	std::cout << "\n\n\n";
-
 
 	SetConsoleMode(Global::hStdin, oldWindowMode);
-	PressAnyKey();
 	return 0;
 }
 

@@ -19,10 +19,10 @@ protected:
 	Menu* prevMenu;
 	ChildMenus childMenu;
 	StringVector commands;
-	static Coord backCoord;
 
 public:
 	const bool isTerminating;
+	static Coord backCoord;
 
 	void addCommand(std::string str);
 	bool addChildMenu(int commandNum, Menu* menu);
@@ -35,6 +35,9 @@ public:
 
 	int getNumChild();
 	int getCommandLength(int commandNum);
+	Coord getInitCoord();
+
+	bool canGoBack();
 
 	~Menu();
 };

@@ -110,3 +110,13 @@ Menu* Menu::getPrevMenu()
 Menu::~Menu()
 {
 }
+
+Coord Menu::getInitCoord()
+{
+	return initCoord;
+}
+
+bool Menu::canGoBack()
+{
+	return (prevMenu == nullptr) ? false : true;
+}
