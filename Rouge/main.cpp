@@ -4,6 +4,8 @@
 #include <iostream>
 #include "Constants.h"
 
+
+using std::cout;
 using CommandsCoords = std::pair<Coord, int>;
 using CommandsCoordsVec = std::vector<CommandsCoords>;
 
@@ -18,14 +20,15 @@ int main()
 	INPUT_RECORD inputBuffer[128];
 	DWORD numInput;
 	const Coord MenuCoord(30,10);
+	GameState state = InMenu;
 
 	GetConsoleMode(Global::hStdin, &oldWindowMode);
 	SetConsoleMode(Global::hStdin, ENABLE_WINDOW_INPUT | ENABLE_MOUSE_INPUT);
 
 	Menu mainMenu(MenuCoord);
-	Menu newGame({ 0, 0 }, &mainMenu);
+	Menu newGame({ 0, 0 }, &mainMenu, GameState::InGame);
 	Menu options(MenuCoord, &mainMenu);
-	Menu quit(Coord(0,0),nullptr, true);
+	Menu quit(Coord(0,0),nullptr, GameState::Quitting);
 	Menu difficulty(MenuCoord, &options);
 
 	mainMenu.addCommand("New Game");
@@ -47,10 +50,11 @@ int main()
 	Coord curHiCoord(0, 0);
 
 	tempMenu->drawMenu();
-	bool isInMenu = true;
 	bool mouseClicked = false;
 	std::string curMenuName = Constants::ErrorMenu;
-	while (isInMenu)
+	state = tempMenu->state;
+
+	while (state == GameState::InMenu)
 	{
 		curMenuName = Constants::ErrorMenu;
 
@@ -60,7 +64,7 @@ int main()
 			128,
 			&numInput)	)
 		{
-			isInMenu = false;
+			state = GameState::State_Error;
 			std::cout << "\n\nERROR IN READ INPUT";
 		}
 		for (int inpIter = 0; inpIter < numInput; inpIter++)
@@ -89,12 +93,11 @@ int main()
 				if (tempCoord.x >= Menu::backCoord.x && tempCoord.x < Menu::backCoord.x + 4)
 				{
 					SetColour(curHiCoord, 40, Colour::White, Colour::None);
-
+					
 					curHiCoord = tempCoord;
 					curHiCoord.x = Menu::backCoord.x;
 					SetColour(curHiCoord, 4);
 				}
-				
 			}
 			else
 			{
@@ -134,12 +137,17 @@ int main()
 			else
 				tempMenu = tempMenu->getMenu(curMenuName);
 
-			if (tempMenu->isTerminating)
-				isInMenu = false;
+			state = tempMenu->state;
 
 			prevMenu = tempMenu->getPrevMenu();
 			tempMenu->drawMenu();
 		}
+	}
+	
+	if (state == GameState::InGame)
+	{
+		cout << "IN GAME";
+		PressAnyKey();
 	}
 
 	SetConsoleMode(Global::hStdin, oldWindowMode);

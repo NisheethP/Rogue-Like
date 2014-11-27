@@ -7,6 +7,14 @@
 #include <utility>
 #include "Functions.h"
 
+enum GameState
+{
+	InMenu,
+	InGame,
+	Quitting,
+	State_Error
+};
+
 class Menu;
 
 using StringVector = std::vector<std::string>;
@@ -19,15 +27,15 @@ protected:
 	Menu* prevMenu;
 	ChildMenus childMenu;
 	StringVector commands;
-
+	
 public:
-	const bool isTerminating;
+	const GameState state;
 	static Coord backCoord;
 
 	void addCommand(std::string str);
 	bool addChildMenu(int commandNum, Menu* menu);
 	
-	Menu(Coord p_InitCoord = { 0, 0 }, Menu* p_PrevMenu = nullptr, bool p_IsTerminating = false);
+	Menu(Coord p_InitCoord = { 0, 0 }, Menu* p_PrevMenu = nullptr, GameState p_state = InMenu);
 	void drawMenu();
 	Menu* getMenu(std::string str);
 	std::string getMenuName(Coord crd);

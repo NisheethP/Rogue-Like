@@ -4,12 +4,12 @@
 using std::cout;
 
 
-Menu::Menu(Coord p_InitCoord, Menu* p_PrevMenu, bool p_IsTerminating) :
+Menu::Menu(Coord p_InitCoord, Menu* p_PrevMenu, GameState p_State):
 initCoord(p_InitCoord),
 prevMenu(p_PrevMenu),
 childMenu(ChildMenus()),
 commands(StringVector()),
-isTerminating(p_IsTerminating)
+state(p_State)
 {
 	if (prevMenu != nullptr)
 		childMenu["Back"] = prevMenu;
@@ -73,7 +73,7 @@ std::string Menu::getMenuName(Coord crd)
 	else
 	{
 		Coord delCoord = crd - initCoord;
-		if (delCoord.y < 0 || commands.size() == 0)
+		if (delCoord.y < 0 || commands.size() == 0 || delCoord.y == 1)
 			return Constants::ErrorMenu;
 
 		int strNum = delCoord.y / 2;
