@@ -8,6 +8,7 @@ class Air :
 {
 public:
 	Air();
+	void moveEntity();
 	~Air();
 };
 

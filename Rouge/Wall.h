@@ -8,6 +8,7 @@ class Wall :
 {
 public:
 	Wall();
+	void moveEntity();
 	~Wall();
 };
 
