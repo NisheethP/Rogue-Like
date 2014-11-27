@@ -3,7 +3,7 @@
 #include <Windows.h>
 #include <iostream>
 #include "Constants.h"
-
+#include "Room.h"
 
 using std::cout;
 using CommandsCoords = std::pair<Coord, int>;
@@ -12,6 +12,8 @@ using CommandsCoordsVec = std::vector<CommandsCoords>;
 Coord MenuMouseProc(MOUSE_EVENT_RECORD mouseEvent, bool& mouseClicked);
 
 DWORD oldWindowMode;
+
+const int BOARD_UPDATE_TIME = 800;
 
 int main()
 {
@@ -26,22 +28,29 @@ int main()
 	SetConsoleMode(Global::hStdin, ENABLE_WINDOW_INPUT | ENABLE_MOUSE_INPUT);
 
 	Menu mainMenu(MenuCoord);
-	Menu newGame({ 0, 0 }, &mainMenu, GameState::InGame);
+	Menu newGame(MenuCoord, &mainMenu);
 	Menu options(MenuCoord, &mainMenu);
 	Menu quit(Coord(0,0),nullptr, GameState::Quitting);
+
 	Menu difficulty(MenuCoord, &options);
+
+	Menu startGame(Coord(0,0), nullptr, GameState::InGame);
 
 	mainMenu.addCommand("New Game");
 	mainMenu.addCommand("Options");
 	mainMenu.addCommand("Quit");
 
 	options.addCommand("Difficulty");
+
+	newGame.addCommand("Begin Game");
 	
 	mainMenu.addChildMenu(0, &newGame);
 	mainMenu.addChildMenu(1, &options);
 	mainMenu.addChildMenu(2, &quit);
 
 	options.addChildMenu(0, &difficulty);
+
+	newGame.addChildMenu(0, &startGame);
 
 	Menu* tempMenu = &mainMenu;
 	Menu* prevMenu = nullptr;
@@ -143,11 +152,13 @@ int main()
 			tempMenu->drawMenu();
 		}
 	}
+
+	Room room1;
 	
-	if (state == GameState::InGame)
-	{
-		cout << "IN GAME";
-		PressAnyKey();
+	while (state == GameState::InGame)
+	{		
+		room1.drawRoom();
+		Sleep(BOARD_UPDATE_TIME);
 	}
 
 	SetConsoleMode(Global::hStdin, oldWindowMode);
