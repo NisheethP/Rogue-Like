@@ -12,11 +12,14 @@ enum EntityType
 
 class Entity
 {
+protected:
 	char pegShape;
 	Colour pegColour;
 	EntityType type;
 	bool isPlayer;
 	bool isMoveable;
+	Coord entitySize;		//The size when looking UP.
+	Direction viewDir;
 public:
 	Entity
 		(
@@ -24,10 +27,15 @@ public:
 		Colour p_PegColour = Colour::White,
 		EntityType p_Type = EntityType::BaseEntity,
 		bool p_IsPlayer = false, 
-		bool p_IsMovable = false
+		bool p_IsMovable = false,
+		Coord p_Size = Coord(1,1),
+		Direction p_Dir = Direction::Dir_Up
 		);
 	
 	virtual void moveEntity() = 0;
+	char getPegShape();
+		
+
 	~Entity();
 };
 
