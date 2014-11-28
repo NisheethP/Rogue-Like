@@ -8,6 +8,7 @@ class Door :
 {
 public:
 	Door();
+	void moveEntity();
 	~Door();
 };
 

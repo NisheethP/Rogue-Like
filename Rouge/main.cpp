@@ -154,6 +154,9 @@ int main()
 	}
 
 	Room room1;
+	Room room2;
+
+	room1.setRoom(Dir_Up, &room2);
 	
 	while (state == GameState::InGame)
 	{		

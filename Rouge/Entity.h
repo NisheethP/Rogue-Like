@@ -34,6 +34,7 @@ public:
 	
 	virtual void moveEntity() = 0;
 	char getPegShape();
+	Coord getSize();
 		
 
 	~Entity();

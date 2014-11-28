@@ -15,6 +15,10 @@ char Entity::getPegShape()
 {
 	return pegShape;
 }
+Coord Entity::getSize()
+{
+	return entitySize;
+}
 
 Entity::~Entity()
 {

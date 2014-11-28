@@ -127,6 +127,26 @@ public:
 
 		return tempCoord;
 	}	
+
+	//Multiply both coordinates by pNum, and get their floor (by truncation)
+	Coord operator* (double pNum)
+	{
+		Coord tempCoord = *this;
+		tempCoord.x *= pNum;
+		tempCoord.y *= pNum;
+
+		return tempCoord;
+	}
+
+	//Divide both coordinates by pNum, and get their floor (by truncation)
+	Coord operator/ (double pNum)
+	{
+		Coord tempCoord = *this;
+		tempCoord.x /= pNum;
+		tempCoord.y /= pNum;
+
+		return tempCoord;
+	}
 };
 
 void ClearScreen();

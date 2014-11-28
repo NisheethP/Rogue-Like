@@ -9,6 +9,7 @@ public:
 	static std::string ErrorMenu;
 	static char Air;
 	static char Wall;
+	static char Door;
 };
 
 #endif
