@@ -4,6 +4,7 @@
 Wall::Wall()
 {
 	pegShape = Constants::Wall;
+	type = WallEntity;
 }
 
 void Wall::moveEntity()

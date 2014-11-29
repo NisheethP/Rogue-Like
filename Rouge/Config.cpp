@@ -2,12 +2,14 @@
 #include <Shlobj.h>
 wstring Config::fileExt = wstring(L"cfg");
 
-Config::Config(wstring p_FileName)
+Config::Config(wstring p_FileName) : fileName(p_FileName)
 {
 	folderName = L"Rogue";
-	
-	LPCWSTR path = getCompPath().c_str();
-	//CreateDirectory();
+	setMyDocPath();
+
+	wstring tempPath = L"\\\\?\\";
+	tempPath += getFolderPath().c_str();
+	CreateDirectoryW(tempPath.c_str(), NULL);
 }
 
 wstring Config::getFileName()
@@ -17,7 +19,17 @@ wstring Config::getFileName()
 	return name;
 }
 
-void Config::getMyDocPath()
+wstring Config::getFolderPath()
+{
+	wstring path = L"";
+
+	path += myDocPath;
+	path += folderName;
+
+	return path;
+}
+
+void Config::setMyDocPath()
 {
 	PWSTR path = L"";
 	SHGetKnownFolderPath(FOLDERID_Documents,0,NULL, &path);
@@ -29,7 +41,7 @@ wstring Config::getCompPath()
 {
 	wstring path = L"";
 	
-	path = myDocPath;
+	path += myDocPath;
 	path += folderName;
 	path += L"\\";
 	path += getFileName();

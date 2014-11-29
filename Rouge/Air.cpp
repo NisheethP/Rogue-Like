@@ -4,6 +4,7 @@
 Air::Air()
 {
 	pegShape = Constants::Air;
+	type = AirEntity;
 }
 
 void Air::moveEntity()

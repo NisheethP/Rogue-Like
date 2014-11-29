@@ -14,7 +14,8 @@ class Config
 	wstring folderName;
 
 	wstring getCompPath();
-	void getMyDocPath();
+	wstring getFolderPath();
+	void setMyDocPath();
 
 public:
 	wstring getFileName();

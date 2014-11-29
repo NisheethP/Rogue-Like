@@ -7,8 +7,15 @@ Coord Room::roomSize = Coord(45,25);
 const Direction allDir[5] = { Dir_Up, Dir_Down, Dir_Left, Dir_Right, Dir_Error };
 
 Room::Room():
-entities(EntityVector2d(45, EntityVector(25, new Air())))
+entities(EntityVector2d(45, EntityVector(25)))
 {
+	for (int col = 0; col < roomSize.x; col++)
+	{
+		for (int row = 0; row < roomSize.y; row++)
+		{
+			entities[col][row] = new Air();
+		}
+	}
 	for (int i = 0; i < roomSize.y; i++)
 	{
 		entities[0][i] = new Wall();
@@ -26,12 +33,6 @@ entities(EntityVector2d(45, EntityVector(25, new Air())))
 		Direction curDir = allDir[i];
 		sideRooms[curDir] = nullptr;
 	}
-
-	/*sideRooms[Dir_Up] = nullptr;
-	sideRooms[Dir_Down] = nullptr;
-	sideRooms[Dir_Left] = nullptr;
-	sideRooms[Dir_Right] = nullptr;
-	sideRooms[Dir_Error] = nullptr;*/
 }
 
 void Room::drawRoom()
@@ -136,9 +137,9 @@ bool Room::setDoor(Direction dir)
 
 Room::~Room()
 {
-	for (int row = 0; row < roomSize.y; row++)
+	for (int col = 0; col < roomSize.x; col++)
 	{
-		for (int col = 0; col < roomSize.x; col++)
+		for (int row = 0; row < roomSize.y; row++)
 		{
 			delete entities[col][row];
 		}

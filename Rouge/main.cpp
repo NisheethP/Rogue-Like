@@ -4,6 +4,7 @@
 #include <iostream>
 #include "Constants.h"
 #include "Room.h"
+#include "Config.h"
 
 using std::cout;
 using CommandsCoords = std::pair<Coord, int>;
@@ -23,6 +24,8 @@ int main()
 	DWORD numInput;
 	const Coord MenuCoord(30,10);
 	GameState state = InMenu;
+
+	Config controls(L"controls");
 
 	GetConsoleMode(Global::hStdin, &oldWindowMode);
 	SetConsoleMode(Global::hStdin, ENABLE_WINDOW_INPUT | ENABLE_MOUSE_INPUT);

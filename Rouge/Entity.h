@@ -7,7 +7,10 @@
 enum EntityType
 {
 	BaseEntity,
-	Player
+	PlayerEntity,
+	AirEntity,
+	DoorEntity,
+	WallEntity
 };
 
 class Entity

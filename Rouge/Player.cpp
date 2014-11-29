@@ -3,6 +3,7 @@
 
 Player::Player()
 {
+
 }
 
 void Player::moveEntity()
