@@ -5,6 +5,10 @@ Player::Player()
 {
 }
 
+void Player::moveEntity()
+{
+
+}
 
 Player::~Player()
 {

@@ -8,6 +8,7 @@ class Player :
 {
 public:
 	Player();
+	void moveEntity();
 	~Player();
 };
 
