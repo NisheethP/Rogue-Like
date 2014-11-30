@@ -6,7 +6,11 @@
 class Constants
 {
 public:
+	//ERROR STRINGS
 	static std::string ErrorMenu;
+	static std::string ErrorDiff;	
+
+	//SHAPES FOR ENTITIES IN GAME
 	static char Air;
 	static char Wall;
 	static char Door;
