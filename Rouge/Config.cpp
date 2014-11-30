@@ -1,6 +1,5 @@
 #include "Config.h"
 #include <Shlobj.h>
-#include <Shlwapi.h>
 using ListIter = ConfigLineList::iterator;
 wstring Config::fileExt = wstring(L"cfg");
 
@@ -14,24 +13,14 @@ Config::Config(wstring p_FileName) : fileName(p_FileName)
 	CreateDirectoryW(tempPath.c_str(), NULL);
 	tempPath = L"\\\\?\\";
 	tempPath += getCompPath();
-	if (!PathFileExistsW(tempPath.c_str()))
-		fileHandle = CreateFileW
-						(tempPath.c_str(),						//Path of file - type - LPCWSTR 
-						GENERIC_READ | GENERIC_WRITE,			//READ-WRITE Access
-						FILE_SHARE_READ | FILE_SHARE_WRITE,		//Share access
-						NULL,									//Security attributes. NULL just inherits those of program
-						CREATE_NEW,								//What to actually do with file
-						FILE_ATTRIBUTE_NORMAL,					//Property of file (hidden etc)
-						NULL);									//A template file. NULL means no template file
-	else
-		fileHandle = CreateFileW
-						(tempPath.c_str(),						//Path of file - type - LPCWSTR 
-						GENERIC_READ | GENERIC_WRITE,			//READ-WRITE Access
-						FILE_SHARE_READ | FILE_SHARE_WRITE,		//Share access
-						NULL,									//Security attributes. NULL just inherits those of program
-						OPEN_EXISTING,							//What to actually do with file
-						FILE_ATTRIBUTE_NORMAL,					//Property of file (hidden etc)
-						NULL);									//A template file. NULL means no template file
+	fileHandle = CreateFileW
+					(tempPath.c_str(),						//Path of file - type - LPCWSTR 
+					GENERIC_READ | GENERIC_WRITE,			//READ-WRITE Access
+					FILE_SHARE_READ | FILE_SHARE_WRITE,		//Share access
+					NULL,									//Security attributes. NULL just inherits those of program
+					OPEN_ALWAYS,							//What to actually do with file
+					FILE_ATTRIBUTE_NORMAL,					//Property of file (hidden etc)
+					NULL);									//A template file. NULL means no template file
 }
 
 wstring Config::getFileName()
