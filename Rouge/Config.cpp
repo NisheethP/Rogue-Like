@@ -1,6 +1,12 @@
 #include "Config.h"
 #include <Shlobj.h>
-using ListIter = ConfigLineList::iterator;
+#include "Constants.h"
+#include "Functions.h"
+#include "boost\lexical_cast.hpp"
+
+using VecIter = ConfigLineVec::iterator;
+using boost::lexical_cast;
+
 wstring Config::fileExt = wstring(L"cfg");
 
 Config::Config(wstring p_FileName) : fileName(p_FileName)
@@ -63,31 +69,141 @@ wstring Config::getCompPath()
 template <typename T>
 bool Config::addLine(string option, T value)
 {
-	for (ListIter listIter = configLines.begin(); listIter != configLines.end(); ++listIter)
+	for (VecIter iter = configLines.begin(); iter != configLines.end(); ++iter)
 	{
-		if (listIter->first == option)
+		if (iter->first == option)
 			return false;
 	}
 
-	list.push_back(option, value);
+	configLines.push_back(ConfigLine(option, value));
 	return true;
 }
+
 template <typename T>
 bool Config::editLine(string option, T value)
 {
-	for (ListIter listIter = configLines.begin(); listIter != configLines.end(); ++listIter)
+	for (VecIter iter = configLines.begin(); iter != configLines.end(); ++iter)
 	{
-		if (listIter->first == option)
+		if (iter->first == option)
 		{
-			if (listIter->second.type() == typeid(value))
+			if (iter->second.type() == typeid(value))
 			{
-				listIter->second = value;
+				iter->second = value;
 				return true;
 			}
 		}
 	}
 
 	return false;
+}
+
+void Config::writeToFile()
+{
+	LPDWORD numBytesWrote = 0;
+	char tempBuffer[2] = " ";
+	std::string tempString = "ERROR";
+	
+	for (VecIter iter = configLines.begin(); iter != configLines.end(); ++iter)
+	{
+		WriteFile(fileHandle, iter->first.c_str(), iter->first.size(), numBytesWrote, NULL);
+
+		tempBuffer[0] += Constants::Equal;
+		WriteFile(fileHandle, tempBuffer, 1, numBytesWrote, NULL);
+
+		if (iter->second.type() == typeid(Difficulty))
+		{
+		//	Difficulty tempDiff = Difficulty(lexical_cast<int>(iter->second));
+		//	Diff_To_String(tempDiff, tempString);
+		}
+
+		else if (iter->second.type() == typeid(KeyPress))
+		{
+			//KeyPress tempKey = KeyPress(lexical_cast<int>(iter->second));
+			//keyPress_To_Char(tempKey, tempBuffer[0]);
+		//	tempString = "";
+		//	tempString += tempBuffer;
+		}
+
+		else if (iter->second.type() == typeid(string))
+		{
+			//tempString = lexical_cast<string>(iter->second);
+		}
+
+		else
+		{
+			//tempString = lexical_cast<string>(iter->second);
+		}
+
+		WriteFile(fileHandle, tempString.c_str(),tempString.size(), numBytesWrote, NULL);
+
+		tempBuffer[0] += Constants::Line_End;
+		WriteFile(fileHandle, tempBuffer, 1, numBytesWrote, NULL);
+
+		tempBuffer[0] += '\n';
+		WriteFile(fileHandle, tempBuffer, 1, numBytesWrote, NULL);
+
+	}	
+}
+
+void Config::readFromFile()
+{
+	char buffer[2] = "E";
+	LPDWORD numBytesRead = 0;
+	bool isName = true;
+	bool nameFound = false;
+	
+	for (VecIter iter = configLines.begin(); iter != configLines.end(); ++iter)
+	{
+		string optionName = "";
+		string optionValue = "";
+
+		while (buffer[0] != Constants::Line_End)
+		{
+			ReadFile(fileHandle, buffer, 1, numBytesRead, NULL);
+			if (buffer[0] == Constants::Equal)
+				isName = false;
+			else if (isName)
+				optionName += buffer;
+			else
+				optionValue += buffer;
+		}
+
+		for (VecIter tempIter = configLines.begin(); tempIter != configLines.end(); ++tempIter)
+		{
+			if (optionName == tempIter->first)
+			{
+				nameFound = true;
+				if (tempIter->second.type() == typeid(Difficulty))
+				{
+					Difficulty tempDiff;
+					String_To_Diff(tempDiff, optionValue);
+					tempIter->second = tempDiff;
+				}
+
+				else if (tempIter->second.type() == typeid(KeyPress))
+				{
+					KeyPress tempKey;
+					char_To_KeyPress(tempKey, optionValue[0]);
+					tempIter->second = tempKey;
+				}
+
+				else if (tempIter->second.type() == typeid(string))
+				{
+					tempIter->second = optionValue;
+				}
+
+				else
+				{
+					//tempIter->second = lexical_cast<double>(optionValue);
+				}
+			}
+		}
+
+		if (!nameFound)
+		{
+			addLine<string>(optionName, optionValue);
+		}
+	}
 }
 
 Config::~Config()

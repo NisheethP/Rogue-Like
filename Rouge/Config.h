@@ -3,17 +3,17 @@
 #define _CONFIG_H_
 
 #include <string>
-#include <list>
+#include <vector>
 #include <map>
-#include <boost\any.hpp>
+#include <boost\variant.hpp>
 #include <utility>
 #include <Windows.h>
 
 using std::wstring;
 using std::string;
 
-using ConfigLine = std::pair<std::string, boost::any>;
-using ConfigLineList = std::list<ConfigLine>;
+using ConfigLine = std::pair<std::string, boost::variant>;
+using ConfigLineVec = std::vector<ConfigLine>;
 
 class Config
 {
@@ -28,7 +28,7 @@ class Config
 	wstring getFolderPath();
 	void setMyDocPath();
 
-	ConfigLineList configLines;
+	ConfigLineVec configLines;
 public:
 	wstring getFileName();
 	Config(wstring p_FileName);
@@ -38,6 +38,9 @@ public:
 	
 	template <typename T>
 	bool editLine(string option, T Value);
+	
+	void writeToFile();
+	void readFromFile();
 
 	~Config();
 };
