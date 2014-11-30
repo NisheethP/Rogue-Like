@@ -4,6 +4,7 @@
 
 #include <Windows.h>
 #include <conio.h>
+#include <string>
 
 enum Colour
 {
@@ -70,15 +71,20 @@ enum KeyPress
 	Key_Other
 };
 
+enum Difficulty
+{
+	Diff_Easy,
+	Diff_Normal,
+	Diff_Hard,
+	Diff_Error
+};
+
 struct KeyInput
 {
 	char keyNum;
 	KeyPress arrowKey;
 	bool isArrowKey;
 };
-
-bool keyPress_To_Char(KeyPress key, char& chr);
-bool char_To_KeyPress(KeyPress& key, char chr);
 
 KeyInput getArrowInput();
 
@@ -194,5 +200,10 @@ Coord DirToNum(Direction pDir);
 Direction oppDir(Direction pDir);
 
 //Conversion Funcions for reading to and from file:
+bool keyPress_To_Char(KeyPress key, char& chr);
+bool char_To_KeyPress(KeyPress& key, char chr);
+
+bool Diff_To_String(Difficulty diff,  std::string& str);
+bool String_To_Diff(Difficulty& diff, std::string str);
 
 #endif

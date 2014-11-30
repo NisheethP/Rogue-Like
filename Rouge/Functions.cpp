@@ -1,5 +1,8 @@
 #include "Functions.h"
 #include <iostream>
+#include <cctype>
+#include "Constants.h"
+
 
 HANDLE Global::hStdin = GetStdHandle(STD_INPUT_HANDLE);
 HANDLE Global::hStdout = GetStdHandle(STD_OUTPUT_HANDLE);
@@ -277,11 +280,63 @@ KeyInput getArrowInput()
 	else
 	{
 		y = 1;
-		arrowKey = Key_Other;
+		char_To_KeyPress(arrowKey, x);
 	}
 
 	return{ x, arrowKey, isArrow };
 }
+
+Coord DirToNum(Direction pDir)
+{
+	switch(pDir)
+	{
+	case Dir_Up:
+		return {0,-1};
+		break;
+	case Dir_Down:
+		return{ 0, 1 };
+		break;
+	case Dir_Left:
+		return{ -1, 0 };
+		break;
+	case Dir_Right:
+		return{ 1, 0 };
+		break;
+	default:
+		break;
+	}
+	return{ 0, 0 };
+}
+
+//Gives the Direction opposite to current direction
+Direction oppDir(Direction pDir)
+{
+	Direction rDir;
+	switch (pDir)
+	{
+	case Dir_Right:
+		rDir = Dir_Left;
+		break;
+	case Dir_Left:
+		rDir = Dir_Right;
+		break;
+	case Dir_Down:
+		rDir = Dir_Up;
+		break;
+	case Dir_Up:
+		rDir = Dir_Down;
+		break;
+	case Dir_Error:
+	default:
+		break;
+	}
+
+	return rDir;
+}
+
+//================================================
+//Conversion Functions for Read and Write to File
+//================================================
 
 bool keyPress_To_Char(KeyPress key, char& chr)
 {
@@ -292,11 +347,90 @@ bool keyPress_To_Char(KeyPress key, char& chr)
 	case Key_Right:
 	case Key_Left:
 		return false;
-	
+
 	case Key_Enter:
 		chr = char(13);
 		return true;
-		
+
+	case Key_A:
+		chr = 'A';
+		return true;
+	case Key_B:
+		chr = 'B';
+		return true;
+	case Key_C:
+		chr = 'C';
+		return true;
+	case Key_D:
+		chr = 'D';
+		return true;
+	case Key_E:
+		chr = 'E';
+		return true;
+	case Key_F:
+		chr = 'F';
+		return true;
+	case Key_G:
+		chr = 'G';
+		return true;
+	case Key_H:
+		chr = 'H';
+		return true;
+	case Key_I:
+		chr = 'I';
+		return true;
+	case Key_J:
+		chr = 'J';
+		return true;
+	case Key_K:
+		chr = 'K';
+		return true;
+	case Key_L:
+		chr = 'L';
+		return true;
+	case Key_M:
+		chr = 'M';
+		return true;
+	case Key_N:
+		chr = 'N';
+		return true;
+	case Key_O:
+		chr = 'O';
+		return true;
+	case Key_P:
+		chr = 'P';
+		return true;
+	case Key_Q:
+		chr = 'Q';
+		return true;
+	case Key_R:
+		chr = 'R';
+		return true;
+	case Key_S:
+		chr = 'S';
+		return true;
+	case Key_T:
+		chr = 'T';
+		return true;
+	case Key_U:
+		chr = 'U';
+		return true;
+	case Key_V:
+		chr = 'V';
+		return true;
+	case Key_W:
+		chr = 'W';
+		return true;
+	case Key_X:
+		chr = 'X';
+		return true;
+	case Key_Y:
+		chr = 'Y';
+		return true;
+	case Key_Z:
+		chr = 'Z';
+		return true;
+
 	default:
 		return false;
 	}
@@ -311,7 +445,7 @@ bool char_To_KeyPress(KeyPress& key, char chr)
 	case 13:
 		key = Key_Enter;
 		return true;
-	
+
 	case 'a':
 	case 'A':
 		key = Key_A;
@@ -423,50 +557,38 @@ bool char_To_KeyPress(KeyPress& key, char chr)
 	return false;
 }
 
-Coord DirToNum(Direction pDir)
+bool Diff_To_String(Difficulty diff, std::string& str)
 {
-	switch(pDir)
+	switch (diff)
 	{
-	case Dir_Up:
-		return {0,-1};
-		break;
-	case Dir_Down:
-		return{ 0, 1 };
-		break;
-	case Dir_Left:
-		return{ -1, 0 };
-		break;
-	case Dir_Right:
-		return{ 1, 0 };
-		break;
+	case Diff_Easy:
+		str = "Easy";
+		return true;
+	case Diff_Normal:
+		str = "Easy";
+		return true;
+	case Diff_Hard:
+		str = "Easy";
+		return true;
+	case Diff_Error:
+		str = Constants::ErrorDiff;
 	default:
-		break;
+		return false;
 	}
-	return{ 0, 0 };
+	return false;
 }
 
-//Gives the Direction opposite to current direction
-Direction oppDir(Direction pDir)
+bool String_To_Diff(Difficulty& diff, std::string str)
 {
-	Direction rDir;
-	switch (pDir)
-	{
-	case Dir_Right:
-		rDir = Dir_Left;
-		break;
-	case Dir_Left:
-		rDir = Dir_Right;
-		break;
-	case Dir_Down:
-		rDir = Dir_Up;
-		break;
-	case Dir_Up:
-		rDir = Dir_Down;
-		break;
-	case Dir_Error:
-	default:
-		break;
-	}
+	for (int i = 0; i < str.size(); i++)
+		str[i] = std::tolower(str[i]);
 
-	return rDir;
+	if (str == "easy")
+		diff = Diff_Easy;
+	else if (str == "normal")
+		diff = Diff_Easy;
+	else if (str == "hard")
+		diff = Diff_Easy;
+	else
+		return false;
 }
