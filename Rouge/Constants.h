@@ -10,6 +10,8 @@ public:
 	static char Air;
 	static char Wall;
 	static char Door;
+	static char Line_End;
+	static char Equal;
 };
 
 #endif

@@ -311,6 +311,111 @@ bool char_To_KeyPress(KeyPress& key, char chr)
 	case 13:
 		key = Key_Enter;
 		return true;
+	
+	case 'a':
+	case 'A':
+		key = Key_A;
+		return true;
+	case 'b':
+	case 'B':
+		key = Key_B;
+		return true;
+	case 'c':
+	case 'C':
+		key = Key_C;
+		return true;
+	case 'd':
+	case 'D':
+		key = Key_D;
+		return true;
+	case 'e':
+	case 'E':
+		key = Key_E;
+		return true;
+	case 'f':
+	case 'F':
+		key = Key_F;
+		return true;
+	case 'g':
+	case 'G':
+		key = Key_G;
+		return true;
+	case 'h':
+	case 'H':
+		key = Key_H;
+		return true;
+	case 'i':
+	case 'I':
+		key = Key_I;
+		return true;
+	case 'j':
+	case 'J':
+		key = Key_J;
+		return true;
+	case 'k':
+	case 'K':
+		key = Key_K;
+		return true;
+	case 'l':
+	case 'L':
+		key = Key_L;
+		return true;
+	case 'm':
+	case 'M':
+		key = Key_M;
+		return true;
+	case 'n':
+	case 'N':
+		key = Key_N;
+		return true;
+	case 'o':
+	case 'O':
+		key = Key_O;
+		return true;
+	case 'p':
+	case 'P':
+		key = Key_P;
+		return true;
+	case 'q':
+	case 'Q':
+		key = Key_Q;
+		return true;
+	case 'r':
+	case 'R':
+		key = Key_R;
+		return true;
+	case 's':
+	case 'S':
+		key = Key_S;
+		return true;
+	case 't':
+	case 'T':
+		key = Key_T;
+		return true;
+	case 'u':
+	case 'U':
+		key = Key_U;
+		return true;
+	case 'v':
+	case 'V':
+		key = Key_V;
+		return true;
+	case 'w':
+	case 'W':
+		key = Key_W;
+		return true;
+	case 'x':
+	case 'X':
+		key = Key_X;
+		return true;
+	case 'y':
+	case 'Y':
+		key = Key_Y;
+		return true;
+	case 'z':
+	case 'Z':
+		key = Key_Z;
+		return true;
 
 	default:
 		return false;
