@@ -8,7 +8,33 @@ using VecIter = ConfigLineVec::iterator;
 using boost::lexical_cast;
 
 wstring Config::fileExt = wstring(L"cfg");
+/*
+//================================
+// VARIANT VISITOR OPERATORS
+//================================
+void Config::WriteVisitor::operator() (double& operand)
+{
+	
+}
 
+void Config::WriteVisitor::operator() (string& operand)
+{
+
+}
+
+void Config::WriteVisitor::operator() (DiffVariant& operand)
+{
+
+}
+
+void Config::WriteVisitor::operator() (KeyVariant& operand)
+{
+
+}
+
+
+//-------------------------------------//
+*/
 Config::Config(wstring p_FileName) : fileName(p_FileName)
 {
 	folderName = L"Rogue";
@@ -66,8 +92,8 @@ wstring Config::getCompPath()
 	return path;
 }
 
-template <typename T>
-bool Config::addLine(string option, T value)
+
+bool Config::addLine(string option, double value)
 {
 	for (VecIter iter = configLines.begin(); iter != configLines.end(); ++iter)
 	{
@@ -79,18 +105,14 @@ bool Config::addLine(string option, T value)
 	return true;
 }
 
-template <typename T>
-bool Config::editLine(string option, T value)
+bool Config::editLine(string option, double value)
 {
 	for (VecIter iter = configLines.begin(); iter != configLines.end(); ++iter)
 	{
 		if (iter->first == option)
 		{
-			if (iter->second.type() == typeid(value))
-			{
-				iter->second = value;
-				return true;
-			}
+			iter->second = value;
+			return true;
 		}
 	}
 
@@ -99,7 +121,7 @@ bool Config::editLine(string option, T value)
 
 void Config::writeToFile()
 {
-	LPDWORD numBytesWrote = 0;
+	LPDWORD numBytesWrote = new DWORD;
 	char tempBuffer[2] = " ";
 	std::string tempString = "ERROR";
 	
@@ -107,42 +129,43 @@ void Config::writeToFile()
 	{
 		WriteFile(fileHandle, iter->first.c_str(), iter->first.size(), numBytesWrote, NULL);
 
-		tempBuffer[0] += Constants::Equal;
+		tempBuffer[0] = Constants::Equal;
 		WriteFile(fileHandle, tempBuffer, 1, numBytesWrote, NULL);
 
-		if (iter->second.type() == typeid(Difficulty))
-		{
-		//	Difficulty tempDiff = Difficulty(lexical_cast<int>(iter->second));
-		//	Diff_To_String(tempDiff, tempString);
-		}
+		//if (iter->second.type() == typeid(Difficulty))
+		//{
+			//Difficulty tempDiff = apply_visitor(ConfigVisitor(), iter->second);
+			//Diff_To_String(tempDiff, tempString);
+		//}
 
-		else if (iter->second.type() == typeid(KeyPress))
-		{
+		//else if (iter->second.type() == typeid(KeyPress))
+		//{
 			//KeyPress tempKey = KeyPress(lexical_cast<int>(iter->second));
 			//keyPress_To_Char(tempKey, tempBuffer[0]);
 		//	tempString = "";
 		//	tempString += tempBuffer;
-		}
+		//}
 
-		else if (iter->second.type() == typeid(string))
-		{
+		//else if (iter->second.type() == typeid(string))
+		//{
 			//tempString = lexical_cast<string>(iter->second);
-		}
+		//}
 
-		else
-		{
-			//tempString = lexical_cast<string>(iter->second);
-		}
+		//else
+		//{
+			tempString = lexical_cast<string>(iter->second);
+		//}
 
 		WriteFile(fileHandle, tempString.c_str(),tempString.size(), numBytesWrote, NULL);
 
-		tempBuffer[0] += Constants::Line_End;
+		tempBuffer[0] = Constants::Line_End;
 		WriteFile(fileHandle, tempBuffer, 1, numBytesWrote, NULL);
 
-		tempBuffer[0] += '\n';
+		tempBuffer[0] = '\n';
 		WriteFile(fileHandle, tempBuffer, 1, numBytesWrote, NULL);
-
-	}	
+		
+	}
+	delete numBytesWrote;
 }
 
 void Config::readFromFile()
@@ -152,7 +175,7 @@ void Config::readFromFile()
 	bool isName = true;
 	bool nameFound = false;
 	
-	for (VecIter iter = configLines.begin(); iter != configLines.end(); ++iter)
+	/*for (VecIter iter = configLines.begin(); iter != configLines.end(); ++iter)
 	{
 		string optionName = "";
 		string optionValue = "";
@@ -175,21 +198,21 @@ void Config::readFromFile()
 				nameFound = true;
 				if (tempIter->second.type() == typeid(Difficulty))
 				{
-					Difficulty tempDiff;
-					String_To_Diff(tempDiff, optionValue);
-					tempIter->second = tempDiff;
+					//Difficulty tempDiff;
+					//String_To_Diff(tempDiff, optionValue);
+					//tempIter->second = tempDiff;
 				}
 
 				else if (tempIter->second.type() == typeid(KeyPress))
 				{
-					KeyPress tempKey;
-					char_To_KeyPress(tempKey, optionValue[0]);
-					tempIter->second = tempKey;
+					//KeyPress tempKey;
+					//char_To_KeyPress(tempKey, optionValue[0]);
+					//tempIter->second = tempKey;
 				}
 
 				else if (tempIter->second.type() == typeid(string))
 				{
-					tempIter->second = optionValue;
+					//tempIter->second = optionValue;
 				}
 
 				else
@@ -203,7 +226,7 @@ void Config::readFromFile()
 		{
 			addLine<string>(optionName, optionValue);
 		}
-	}
+	}*/
 }
 
 Config::~Config()

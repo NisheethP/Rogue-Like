@@ -8,15 +8,48 @@
 #include <boost\variant.hpp>
 #include <utility>
 #include <Windows.h>
+#include "Functions.h"
 
 using std::wstring;
 using std::string;
+using boost::apply_visitor;
 
-using ConfigLine = std::pair<std::string, boost::variant>;
+
+struct DiffVariant
+{
+	Difficulty diff;
+	DiffVariant()
+	{
+		diff = Difficulty(0);
+	}
+};
+struct KeyVariant
+{
+	KeyPress key;
+	KeyVariant()
+	{
+		key = KeyPress(0);
+	}
+};
+
+using ConfigDatas = boost::variant<double, string, DiffVariant, KeyVariant>;
+
+using ConfigLine = std::pair<std::string, double>;
 using ConfigLineVec = std::vector<ConfigLine>;
 
 class Config
 {
+
+
+	/*class WriteVisitor :
+		public boost::static_visitor<>
+	{
+		void operator() (double& operand);
+		void operator() (string& operand);
+		void operator() (DiffVariant& operand);
+		void operator() (KeyVariant& operand);
+	};*/
+
 	HANDLE fileHandle;
 
 	wstring fileName;
@@ -33,11 +66,9 @@ public:
 	wstring getFileName();
 	Config(wstring p_FileName);
 
-	template <typename T>
-	bool addLine(string option, T value);
+	bool addLine(string option, double value);
 	
-	template <typename T>
-	bool editLine(string option, T Value);
+	bool editLine(string option, double Value);
 	
 	void writeToFile();
 	void readFromFile();
