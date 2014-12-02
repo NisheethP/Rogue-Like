@@ -32,23 +32,27 @@ struct KeyVariant
 	}
 };
 
-using ConfigDatas = boost::variant<double, string, DiffVariant, KeyVariant>;
+using ConfigDatas = boost::variant<double,char, string, DiffVariant, KeyVariant>;
 
-using ConfigLine = std::pair<std::string, double>;
+using ConfigLine = std::pair<std::string, ConfigDatas>;
 using ConfigLineVec = std::vector<ConfigLine>;
 
 class Config
 {
-
-
-	/*class WriteVisitor :
+	class WriteVisitor :
 		public boost::static_visitor<>
 	{
+	public:
+		WriteVisitor(): str (nullptr)
+		{ };
 		void operator() (double& operand);
 		void operator() (string& operand);
 		void operator() (DiffVariant& operand);
 		void operator() (KeyVariant& operand);
-	};*/
+		void operator() (char& operand);
+		
+		string* str;
+	};
 
 	HANDLE fileHandle;
 

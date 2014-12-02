@@ -339,6 +339,7 @@ Direction oppDir(Direction pDir)
 //================================================
 
 bool keyPress_To_Char(KeyPress key, char& chr)
+
 {
 	switch (key)
 	{

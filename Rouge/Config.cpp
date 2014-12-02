@@ -8,33 +8,46 @@ using VecIter = ConfigLineVec::iterator;
 using boost::lexical_cast;
 
 wstring Config::fileExt = wstring(L"cfg");
-/*
+
 //================================
 // VARIANT VISITOR OPERATORS
 //================================
 void Config::WriteVisitor::operator() (double& operand)
 {
-	
+	*str = lexical_cast<string>(operand);
 }
 
 void Config::WriteVisitor::operator() (string& operand)
 {
-
+	*str = operand;
 }
 
 void Config::WriteVisitor::operator() (DiffVariant& operand)
 {
+	Difficulty tempDiff = operand.diff;
+	string tempString = *str;
+	Diff_To_String(tempDiff, tempString);
+	*str = tempString;
+}
 
+void Config::WriteVisitor::operator() (char& operand)
+{
+	string t_str = "";
+	t_str += operand;
+	(*this)(t_str);
 }
 
 void Config::WriteVisitor::operator() (KeyVariant& operand)
 {
-
+	KeyPress tempKey = operand.key;
+	string tempString = " ";
+	keyPress_To_Char(tempKey, tempString[0]);
+	*str = tempString;
 }
 
 
 //-------------------------------------//
-*/
+
 Config::Config(wstring p_FileName) : fileName(p_FileName)
 {
 	folderName = L"Rogue";
@@ -123,7 +136,10 @@ void Config::writeToFile()
 {
 	LPDWORD numBytesWrote = new DWORD;
 	char tempBuffer[2] = " ";
-	std::string tempString = "ERROR";
+	string tempString = "ERROR";
+
+	WriteVisitor visitor;
+	visitor.str = &tempString;
 	
 	for (VecIter iter = configLines.begin(); iter != configLines.end(); ++iter)
 	{
@@ -131,6 +147,8 @@ void Config::writeToFile()
 
 		tempBuffer[0] = Constants::Equal;
 		WriteFile(fileHandle, tempBuffer, 1, numBytesWrote, NULL);
+
+		apply_visitor(visitor, iter->second);
 
 		//if (iter->second.type() == typeid(Difficulty))
 		//{
@@ -153,9 +171,9 @@ void Config::writeToFile()
 
 		//else
 		//{
-			tempString = lexical_cast<string>(iter->second);
+		//	tempString = lexical_cast<string>(iter->second);
 		//}
-
+		tempString = *(visitor.str);
 		WriteFile(fileHandle, tempString.c_str(),tempString.size(), numBytesWrote, NULL);
 
 		tempBuffer[0] = Constants::Line_End;
