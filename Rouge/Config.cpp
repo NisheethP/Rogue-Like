@@ -2,10 +2,7 @@
 #include <Shlobj.h>
 #include "Constants.h"
 #include "Functions.h"
-#include "boost\lexical_cast.hpp"
 
-using VecIter = ConfigLineVec::iterator;
-using boost::lexical_cast;
 
 wstring Config::fileExt = wstring(L"cfg");
 
@@ -44,7 +41,6 @@ void Config::WriteVisitor::operator() (KeyVariant& operand)
 	keyPress_To_Char(tempKey, tempString[0]);
 	*str = tempString;
 }
-
 
 //-------------------------------------//
 
@@ -103,33 +99,6 @@ wstring Config::getCompPath()
 	path += getFileName();
 
 	return path;
-}
-
-
-bool Config::addLine(string option, double value)
-{
-	for (VecIter iter = configLines.begin(); iter != configLines.end(); ++iter)
-	{
-		if (iter->first == option)
-			return false;
-	}
-
-	configLines.push_back(ConfigLine(option, value));
-	return true;
-}
-
-bool Config::editLine(string option, double value)
-{
-	for (VecIter iter = configLines.begin(); iter != configLines.end(); ++iter)
-	{
-		if (iter->first == option)
-		{
-			iter->second = value;
-			return true;
-		}
-	}
-
-	return false;
 }
 
 void Config::writeToFile()
