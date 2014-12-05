@@ -36,7 +36,6 @@ struct KeyVariant
 using ConfigDatas = boost::variant<double,char, string, DiffVariant, KeyVariant>;
 using ConfigLine = std::pair<std::string, ConfigDatas>;
 using ConfigLineVec = std::vector<ConfigLine>;
-
 using VecIter = ConfigLineVec::iterator;
 using boost::lexical_cast;
 
@@ -67,6 +66,8 @@ class Config
 	void setMyDocPath();
 
 	ConfigLineVec configLines;
+
+	static char typeCode(string type);
 public:
 	wstring getFileName();
 	Config(wstring p_FileName);

@@ -3,6 +3,7 @@
 #include <cctype>
 #include "Constants.h"
 
+using std::string;
 
 HANDLE Global::hStdin = GetStdHandle(STD_INPUT_HANDLE);
 HANDLE Global::hStdout = GetStdHandle(STD_OUTPUT_HANDLE);
@@ -280,7 +281,9 @@ KeyInput getArrowInput()
 	else
 	{
 		y = 1;
-		char_To_KeyPress(arrowKey, x);
+		string str = "";
+		Str_To_KeyPress(arrowKey, str);
+		x = str[0];
 	}
 
 	return{ x, arrowKey, isArrow };
@@ -338,19 +341,28 @@ Direction oppDir(Direction pDir)
 //Conversion Functions for Read and Write to File
 //================================================
 
-bool keyPress_To_Char(KeyPress key, char& chr)
+bool keyPress_To_Str(KeyPress key, string& chr)
 
 {
 	switch (key)
 	{
 	case Key_Down:
+		chr = "Down_Arrow";
+		return true;
 	case Key_Up:
+		chr = "Up_Arrow";
+		return true;
 	case Key_Right:
+		chr = "Right_Arrow";
+		return true;
 	case Key_Left:
-		return false;
-
+		chr = "Left_Arrow";
+		return true;
 	case Key_Enter:
-		chr = char(13);
+		chr = "Enter";
+		return true;
+	case Key_Space:
+		chr = "Space";
 		return true;
 
 	case Key_A:
@@ -439,126 +451,170 @@ bool keyPress_To_Char(KeyPress key, char& chr)
 	return false;
 }
 
-bool char_To_KeyPress(KeyPress& key, char chr)
+bool Str_To_KeyPress(KeyPress& key, string chr)
 {
-	switch (chr)
+	if (chr.size() == 1)
+	{	
+		switch (chr[0])
+		{
+		case 13:
+			key = Key_Enter;
+			return true;
+
+		case 'a':
+		case 'A':
+			key = Key_A;
+			return true;
+		case 'b':
+		case 'B':
+			key = Key_B;
+			return true;
+		case 'c':
+		case 'C':
+			key = Key_C;
+			return true;
+		case 'd':
+		case 'D':
+			key = Key_D;
+			return true;
+		case 'e':
+		case 'E':
+			key = Key_E;
+			return true;
+		case 'f':
+		case 'F':
+			key = Key_F;
+			return true;
+		case 'g':
+		case 'G':
+			key = Key_G;
+			return true;
+		case 'h':
+		case 'H':
+			key = Key_H;
+			return true;
+		case 'i':
+		case 'I':
+			key = Key_I;
+			return true;
+		case 'j':
+		case 'J':
+			key = Key_J;
+			return true;
+		case 'k':
+		case 'K':
+			key = Key_K;
+			return true;
+		case 'l':
+		case 'L':
+			key = Key_L;
+			return true;
+		case 'm':
+		case 'M':
+			key = Key_M;
+			return true;
+		case 'n':
+		case 'N':
+			key = Key_N;
+			return true;
+		case 'o':
+		case 'O':
+			key = Key_O;
+			return true;
+		case 'p':
+		case 'P':
+			key = Key_P;
+			return true;
+		case 'q':
+		case 'Q':
+			key = Key_Q;
+			return true;
+		case 'r':
+		case 'R':
+			key = Key_R;
+			return true;
+		case 's':
+		case 'S':
+			key = Key_S;
+			return true;
+		case 't':
+		case 'T':
+			key = Key_T;
+			return true;
+		case 'u':
+		case 'U':
+			key = Key_U;
+			return true;
+		case 'v':
+		case 'V':
+			key = Key_V;
+			return true;
+		case 'w':
+		case 'W':
+			key = Key_W;
+			return true;
+		case 'x':
+		case 'X':
+			key = Key_X;
+			return true;
+		case 'y':
+		case 'Y':
+			key = Key_Y;
+			return true;
+		case 'z':
+		case 'Z':
+			key = Key_Z;
+			return true;
+		}
+	}
+
+	else
 	{
-	case 13:
-		key = Key_Enter;
-		return true;
+		if (chr == "Up_Arrow")
+		{
+			key = Key_Up;
+			return true;
+		}
 
-	case 'a':
-	case 'A':
-		key = Key_A;
-		return true;
-	case 'b':
-	case 'B':
-		key = Key_B;
-		return true;
-	case 'c':
-	case 'C':
-		key = Key_C;
-		return true;
-	case 'd':
-	case 'D':
-		key = Key_D;
-		return true;
-	case 'e':
-	case 'E':
-		key = Key_E;
-		return true;
-	case 'f':
-	case 'F':
-		key = Key_F;
-		return true;
-	case 'g':
-	case 'G':
-		key = Key_G;
-		return true;
-	case 'h':
-	case 'H':
-		key = Key_H;
-		return true;
-	case 'i':
-	case 'I':
-		key = Key_I;
-		return true;
-	case 'j':
-	case 'J':
-		key = Key_J;
-		return true;
-	case 'k':
-	case 'K':
-		key = Key_K;
-		return true;
-	case 'l':
-	case 'L':
-		key = Key_L;
-		return true;
-	case 'm':
-	case 'M':
-		key = Key_M;
-		return true;
-	case 'n':
-	case 'N':
-		key = Key_N;
-		return true;
-	case 'o':
-	case 'O':
-		key = Key_O;
-		return true;
-	case 'p':
-	case 'P':
-		key = Key_P;
-		return true;
-	case 'q':
-	case 'Q':
-		key = Key_Q;
-		return true;
-	case 'r':
-	case 'R':
-		key = Key_R;
-		return true;
-	case 's':
-	case 'S':
-		key = Key_S;
-		return true;
-	case 't':
-	case 'T':
-		key = Key_T;
-		return true;
-	case 'u':
-	case 'U':
-		key = Key_U;
-		return true;
-	case 'v':
-	case 'V':
-		key = Key_V;
-		return true;
-	case 'w':
-	case 'W':
-		key = Key_W;
-		return true;
-	case 'x':
-	case 'X':
-		key = Key_X;
-		return true;
-	case 'y':
-	case 'Y':
-		key = Key_Y;
-		return true;
-	case 'z':
-	case 'Z':
-		key = Key_Z;
-		return true;
+		else if (chr == "Down_Arrow")
+		{
+			key = Key_Down;
+			return true;
+		}
 
-	default:
-		return false;
+		else if (chr == "Left_Arrow")
+		{
+			key = Key_Left;
+			return true;
+		}
+
+		else if (chr == "Right_Arrow")
+		{
+			key = Key_Right;
+			return true;
+		}
+
+		else if (chr == "Enter")
+		{
+			key = Key_Enter;
+			return true;
+		}
+
+		else if (chr == "Space")
+		{
+			key = Key_Space;
+			return true;
+		}
+
+		else
+		{
+			key = Key_Other;
+		}
 	}
 	return false;
 }
 
-bool Diff_To_String(Difficulty diff, std::string& str)
+bool Diff_To_String(Difficulty diff, string& str)
 {
 	switch (diff)
 	{
@@ -579,7 +635,7 @@ bool Diff_To_String(Difficulty diff, std::string& str)
 	return false;
 }
 
-bool String_To_Diff(Difficulty& diff, std::string str)
+bool String_To_Diff(Difficulty& diff, string str)
 {
 	for (int i = 0; i < str.size(); i++)
 		str[i] = std::tolower(str[i]);

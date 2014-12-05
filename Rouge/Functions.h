@@ -200,8 +200,8 @@ Coord DirToNum(Direction pDir);
 Direction oppDir(Direction pDir);
 
 //Conversion Funcions for reading to and from file:
-bool keyPress_To_Char(KeyPress key, char& chr);
-bool char_To_KeyPress(KeyPress& key, char chr);
+bool keyPress_To_Str(KeyPress key, std::string& chr);
+bool Str_To_KeyPress(KeyPress& key, std::string chr);
 
 bool Diff_To_String(Difficulty diff,  std::string& str);
 bool String_To_Diff(Difficulty& diff, std::string str);
