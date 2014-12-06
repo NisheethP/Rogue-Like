@@ -81,6 +81,8 @@ public:
 	void writeToFile();
 	void readFromFile();
 
+	bool hasOption(string str);
+
 	~Config();
 };
 
@@ -89,12 +91,8 @@ public:
 template <typename T>
 bool Config::addLine(string option, T value)
 {
-	
-	for (VecIter iter = configLines.begin(); iter != configLines.end(); ++iter)
-	{
-		if (iter->first == option)
-			return false;
-	}
+	if (hasOption(option))
+		return false;
 	
 	ConfigDatas dat;
 	dat = value;

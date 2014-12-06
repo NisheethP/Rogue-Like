@@ -137,111 +137,133 @@ void Config::writeToFile()
 	
 	for (VecIter iter = configLines.begin(); iter != configLines.end(); ++iter)
 	{
-		WriteFile(fileHandle, iter->first.c_str(), iter->first.size(), numBytesWrote, NULL);
+		if (!hasOption(iter->first))
+		{
+			WriteFile(fileHandle, iter->first.c_str(), iter->first.size(), numBytesWrote, NULL);
 
-		tempBuffer[0] = Constants::Equal;
-		WriteFile(fileHandle, tempBuffer, 1, numBytesWrote, NULL);
+			tempBuffer[0] = Constants::Equal;
+			WriteFile(fileHandle, tempBuffer, 1, numBytesWrote, NULL);
 
-		apply_visitor(visitor, iter->second);
+			apply_visitor(visitor, iter->second);
 
-		WriteFile(fileHandle, tempString.c_str(),tempString.size(), numBytesWrote, NULL);
+			WriteFile(fileHandle, tempString.c_str(), tempString.size(), numBytesWrote, NULL);
 
-		tempBuffer[0] = Constants::Line_End;
-		WriteFile(fileHandle, tempBuffer, 1, numBytesWrote, NULL);
+			tempBuffer[0] = Constants::Line_End;
+			WriteFile(fileHandle, tempBuffer, 1, numBytesWrote, NULL);
 
-		tempBuffer[0] = '\n';
-		WriteFile(fileHandle, tempBuffer, 1, numBytesWrote, NULL);
-		
+			tempBuffer[0] = '\n';
+			WriteFile(fileHandle, tempBuffer, 1, numBytesWrote, NULL);
+		}
 	}
 	delete numBytesWrote;
 }
 
 void Config::readFromFile()
-{
-	char buffer[33] = "#";
-	DWORD numBytesRead;
-	bool isName = true;
-	bool nameFound = false;
-	bool endOfFile = false;
+{	
+	char buffer[2] = " ";
+	bool fileEnd = false;
+	bool lineEnd = false;
+	DWORD numBytesRead = 0;
+	char ignoredChars[] = {'\n', '#', Constants::Line_End};
 
-	while (!endOfFile)
+	while (!fileEnd)
 	{
-		buffer[0] = '#';
+		this;
+
+ 		lineEnd = false;
 		string optionName = "";
 		string optionValue = "";
-		BOOL readRes = FALSE;
+		bool isName = true;
 
-		while (buffer[0] != Constants::Line_End)
+		while (!lineEnd)
 		{
-			readRes = ReadFile(fileHandle, buffer, 1, &numBytesRead, NULL);
- 			
+			buffer[0] = '#';
+
+			bool readRes = ReadFile(fileHandle, buffer, 1, &numBytesRead, NULL);
+			bool cond = false;
+			
 			if (readRes && numBytesRead == 0)
-				endOfFile = true;
+				fileEnd = true;
 
-			if (buffer[0] == '\n')
-				break;
+			if (buffer[0] == Constants::Line_End || (buffer[0] == '\n') || (buffer[0] == '#'))
+				lineEnd = true;
 
-			if (buffer[0] == Constants::Equal)
+			else if (buffer[0] == Constants::Equal)
 				isName = false;
+			
 			else if (isName)
-				optionName += buffer;
+				optionName += buffer[0];
+
 			else
-				optionValue += buffer;
+				optionValue += buffer[0];
 		}
 
-		for (VecIter iter = configLines.begin(); iter != configLines.end(); ++iter)
+		bool optFound = hasOption(optionName);
+
+		if (optionName == "")
+			optFound = false;
+		if (optFound)
 		{
-			if (optionName == iter->first)
+
+		}
+		else
+		{
+			//Variant to which data is stored
+			//boost::variant<double,char, string, DiffVariant, KeyVariant>;
+
+			string simpValue = "";
+
+			for (int i = 1; i < optionValue.size(); i++)
+				simpValue += optionValue[i];
+
+			if (optionValue[0] == typeCode("double"))
+				this->addLine(optionName, lexical_cast<double> (simpValue));
+
+			if (optionValue[0] == typeCode("string"))
+				this->addLine(optionName, simpValue);
+
+			if (optionValue[0] == typeCode("difficulty"))
 			{
-				string simpOptName = "";
-				for (int i = 0; i < optionName.size(); i++)
-				{
-					simpOptName += optionName[i];
-				}
+				DiffVariant dif;
+				String_To_Diff(dif.diff, simpValue);
+				this->addLine(optionName, dif);
+			}
 
-				nameFound = true;
-				if (optionValue[0] == typeCode("double"))
-				{
-					iter->second = lexical_cast<double>(simpOptName);
-				}
+			if (optionValue[0] == typeCode("char"))
+				this->addLine(optionName, simpValue[0]);
 
-				else if (optionValue[0] == typeCode("difficulty"))
-				{
-					iter->second = (simpOptName);
-				}
-
-				else if (optionValue[0] == typeCode("string"))
-				{
-					DiffVariant diffVar;
-					String_To_Diff(diffVar.diff, simpOptName);
-					iter->second = diffVar;
-				}
-
-				else if (optionValue[0] == typeCode("char"))
-				{
-					iter->second = optionValue[0];
-				}
-
-				else if (optionValue[0] == typeCode("key"))
-				{
-					KeyVariant keyVar;
-					Str_To_KeyPress(keyVar.key, simpOptName);
-					iter->second = keyVar;
-				}
+			if (optionValue[0] == typeCode("key"))
+			{
+				KeyVariant keyVar;
+				Str_To_KeyPress(keyVar.key, simpValue);
+				this->addLine(optionName, keyVar);
 			}
 		}
+	}
+}
 
-		if (!nameFound)
+bool Config::hasOption(string str)
+{
+	bool nameFound = false;
+	for (VecIter iter = configLines.begin(); iter != configLines.end(); iter++)
+	{
+		if (iter->first == str)
 		{
-			addLine<string>(optionName, optionValue);
+			nameFound = true;
+			break;
 		}
 	}
+
+	return nameFound;
 }
 
 Config::~Config()
 {
 
 }
+
+
+//------------------------------------------- 
 
 void LowerizeStr(string* str)
 {
