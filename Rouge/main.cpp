@@ -11,51 +11,76 @@ using CommandsCoords = std::pair<Coord, int>;
 using CommandsCoordsVec = std::vector<CommandsCoords>;
 
 Coord MenuMouseProc(MOUSE_EVENT_RECORD mouseEvent, bool& mouseClicked);
+void ShowConsoleCursor(bool showFlag);
 
 DWORD oldWindowMode;
 
 const int BOARD_UPDATE_TIME = 800;
 
-int main()
+//=============================================
+//CONFIG RELATED STUFF
+
+namespace Configs
 {
-	SetDefaultColour();
+	//CONFIG FILES:
 	
-	INPUT_RECORD inputBuffer[128];
-	DWORD numInput;
-	const Coord MenuCoord(30,10);
-	GameState state = InMenu;
-
+	//Store controls for the game
 	Config controls(L"controls");
+	
+	//CONFIG FILE OPERATIONS:
+	void controlSetup();
+}
+//=============================================
 
-	GetConsoleMode(Global::hStdin, &oldWindowMode);
-	SetConsoleMode(Global::hStdin, ENABLE_WINDOW_INPUT | ENABLE_MOUSE_INPUT);
+
+//=============================================
+//MENU RELATED STUFF
+
+namespace Menus
+{
+	const Coord MenuCoord(30, 10);
+
+	//VARIOUS MENUS:
 
 	Menu mainMenu(MenuCoord);
 	Menu newGame(MenuCoord, &mainMenu);
 	Menu options(MenuCoord, &mainMenu);
-	Menu quit(Coord(0,0),nullptr, GameState::Quitting);
-
-	Menu difficulty(MenuCoord, &options);
-
-	Menu startGame(Coord(0,0), nullptr, GameState::InGame);
-
-	mainMenu.addCommand("New Game");
-	mainMenu.addCommand("Options");
-	mainMenu.addCommand("Quit");
-
-	options.addCommand("Difficulty");
-
-	newGame.addCommand("Begin Game");
+	Menu quit(Coord(0, 0), nullptr, GameState::Quitting);
 	
-	mainMenu.addChildMenu(0, &newGame);
-	mainMenu.addChildMenu(1, &options);
-	mainMenu.addChildMenu(2, &quit);
+	Menu difficulty(MenuCoord, &options);
+	
+	Menu startGame(Coord(0, 0), nullptr, GameState::InGame);
 
-	options.addChildMenu(0, &difficulty);
+	//MENU RELATED OPERATIONS:
 
-	newGame.addChildMenu(0, &startGame);
+	void mainMenuSetup();
+	void optionsSetup();
+	void newGameSetup();
+}
 
-	Menu* tempMenu = &mainMenu;
+using Menus::MenuCoord;
+
+//=============================================
+
+int main()
+{
+	SetDefaultColour();
+	
+	ShowConsoleCursor(false);
+
+	INPUT_RECORD inputBuffer[128];
+	DWORD numInput;
+	
+	GameState state = InMenu;
+
+	GetConsoleMode(Global::hStdin, &oldWindowMode);
+	SetConsoleMode(Global::hStdin, ENABLE_WINDOW_INPUT | ENABLE_MOUSE_INPUT);
+
+	Menus:: mainMenuSetup();
+	Menus::optionsSetup();
+	Menus::newGameSetup();
+
+	Menu* tempMenu = &(Menus::mainMenu);
 	Menu* prevMenu = nullptr;
 	Coord tempCoord(0,0);
 	Coord curCoord(0, 0);
@@ -194,4 +219,54 @@ Coord MenuMouseProc(MOUSE_EVENT_RECORD mouseEvent, bool& mouseClicked)
 	}
 
 	return Coord(-5, -5);		//Negative coordinates are all treated as not being on any menu.
+}
+
+//Set if the horizontal-blinking cursor is visible or not
+void ShowConsoleCursor(bool showFlag)
+{
+	CONSOLE_CURSOR_INFO     cursorInfo;
+
+	GetConsoleCursorInfo(Global::hStdout, &cursorInfo);
+	cursorInfo.bVisible = showFlag; // set the cursor visibility
+	SetConsoleCursorInfo(Global::hStdout, &cursorInfo);
+}
+
+
+//CONFIG OPERATORS:
+void Configs::controlSetup()
+{
+	controls.readFromFile();
+
+	controls.addLine("Up", KeyVariant(Key_W));
+	controls.addLine("Down", KeyVariant(Key_S));
+	controls.addLine("Left", KeyVariant(Key_A));
+	controls.addLine("Right", KeyVariant(Key_D));
+
+	controls.writeToFile();
+}
+
+//MENU OPERATOR:
+void Menus::mainMenuSetup()
+{
+	mainMenu.addCommand("New Game");
+	mainMenu.addCommand("Options");
+	mainMenu.addCommand("Quit");
+
+	mainMenu.addChildMenu(0, &newGame);
+	mainMenu.addChildMenu(1, &options);
+	mainMenu.addChildMenu(2, &quit);
+}
+
+void Menus::optionsSetup()
+{
+	options.addCommand("Difficulty");
+
+	options.addChildMenu(0, &difficulty);
+}
+
+void Menus::newGameSetup()
+{
+	newGame.addCommand("Begin Game");
+	
+	newGame.addChildMenu(0, &startGame);
 }
